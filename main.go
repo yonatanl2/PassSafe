@@ -2,26 +2,14 @@ package main
 
 import (
 	"bufio"
-<<<<<<< HEAD
 	"crypto/sha512"
 	"fmt"
-=======
-	"bytes"
-	"crypto/rand"
-	"crypto/sha512"
-	"encoding/gob"
-	"fmt"
-	"io"
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 	"io/ioutil"
 	"log"
 	"mysqlStorage"
 	"os"
 	"passcypher"
-<<<<<<< HEAD
 	"safeui"
-=======
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 	"sqliteStorage"
 	"strings"
 	"tableactions"
@@ -43,11 +31,7 @@ func create(scanner *bufio.Scanner, hash *[]byte) {
 	scanner.Scan()
 	secret := scanner.Text()
 	if secret == "" {
-<<<<<<< HEAD
 		secret, _ = safeui.GeneratePass(12)
-=======
-		secret, _ = generatePass(12)
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 	}
 
 	t := passcypher.Credentials{
@@ -68,35 +52,6 @@ func read(hash *[]byte) {
 	}
 }
 
-<<<<<<< HEAD
-=======
-func generatePass(charLen int) (string, error) {
-	chars := []byte(`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+,.?/:;{}[]~`)
-
-	i := 0
-	pass := make([]byte, charLen)
-	placeHolder := make([]byte, charLen+(charLen/4))
-	clen := byte(len(chars))
-	maxrb := byte(256 - (256 % len(chars)))
-	for {
-		_, err := io.ReadFull(rand.Reader, placeHolder)
-		if err != nil {
-			return "", err
-		}
-		for _, c := range placeHolder {
-			if c >= maxrb {
-				continue
-			}
-			pass[i] = chars[c%clen]
-			i++
-			if i == charLen {
-				return string(pass), nil
-			}
-		}
-	}
-}
-
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 func login() (*bufio.Scanner, []byte) {
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -118,41 +73,6 @@ func login() (*bufio.Scanner, []byte) {
 	return scanner, sha512Pass.Sum(nil)
 }
 
-<<<<<<< HEAD
-=======
-func getMapBytes(mapText map[int]string) ([]byte, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(mapText)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
-func byteToMap(fileBytes []byte, decodedMap *map[int]string) error {
-	buf := bytes.NewBuffer(fileBytes)
-	dec := gob.NewDecoder(buf)
-	err := dec.Decode(&decodedMap)
-	if err != nil {
-		return nil
-	}
-	return nil
-}
-
-func readPrefrences(mapField *map[int]string) error {
-	bytes, err := ioutil.ReadFile(prefrenceFile)
-	if err != nil {
-		return err
-	}
-	err = byteToMap(bytes, mapField)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 func writeToFile(prefrences map[int]string) error {
 	err := sqliteStorage.CreateSqlite("passsafe")
 	if err != nil {
@@ -163,11 +83,7 @@ func writeToFile(prefrences map[int]string) error {
 		return err
 	}
 	defer file.Close()
-<<<<<<< HEAD
 	fileBytes, err := safeui.GetMapBytes(prefrences)
-=======
-	fileBytes, err := getMapBytes(prefrences)
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 	if err != nil {
 		return err
 	}
@@ -193,11 +109,7 @@ func main() {
 	if len(os.Args) > 1 {
 		if strings.ToLower(os.Args[1]) == "create" {
 			var mapField map[int]string
-<<<<<<< HEAD
 			err := safeui.ReadPrefrences(&mapField, prefrenceFile)
-=======
-			err := readPrefrences(&mapField)
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 			if err != nil {
 				fck(err)
 			}
@@ -207,11 +119,7 @@ func main() {
 
 		} else if strings.ToLower(os.Args[1]) == "read" {
 			var mapField map[int]string
-<<<<<<< HEAD
 			err := safeui.ReadPrefrences(&mapField, prefrenceFile)
-=======
-			err := readPrefrences(&mapField)
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 			if err != nil {
 				fck(err)
 			}
@@ -254,11 +162,7 @@ func main() {
 			panic("Invalid Arguement!")
 		}
 	} else {
-<<<<<<< HEAD
 		safeui.LoadUI(prefrenceFile)
-=======
-		panic("Missing Arguements!")
->>>>>>> 29617df7291980c280282e9db021dbb4165f7342
 	}
 }
 
