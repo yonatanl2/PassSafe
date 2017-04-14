@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"mysqlStorage"
 	"os"
 	"passcypher"
 	"safeui"
-	"sqliteStorage"
 	"strings"
 	"tableactions"
 
@@ -73,27 +71,6 @@ func login() (*bufio.Scanner, []byte) {
 	return scanner, sha512Pass.Sum(nil)
 }
 
-func writeToFile(prefrences map[int]string) error {
-	err := sqliteStorage.CreateSqlite("passsafe")
-	if err != nil {
-		return err
-	}
-	file, err := os.Create(prefrenceFile)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	fileBytes, err := safeui.GetMapBytes(prefrences)
-	if err != nil {
-		return err
-	}
-	_, err = file.Write(fileBytes)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func main() {
 
 	_, err := ioutil.ReadDir(dataDirectory)
@@ -129,34 +106,17 @@ func main() {
 			read(&sha512PassHash)
 
 		} else if strings.ToLower(os.Args[1]) == "sqlite" {
-			_, err = ioutil.ReadFile("./data/passsafe.db")
-			if err != nil {
-				err = sqliteStorage.CreateSqlite("passsafe")
-				if err != nil {
-					fck(err)
-				}
-			}
-
-			err := writeToFile(map[int]string{0: "sqlite3", 1: "./data/passsafe.db"})
-			if err != nil {
-				fck(err)
-			}
-
-			tableactions.SetDB("sqlite3", "./data/passsafe.db")
+			tableactions.SetSQLite()
 			login()
 			fmt.Println("Set SQLite DB")
 		} else if strings.ToLower(os.Args[1]) == "mysql" {
-			err := mysqlStorage.CreateMysql("passsafe")
-			if err != nil {
-				fck(err)
-			}
-			tableactions.SetDB("mysql", "passsafe")
+			tableactions.SetMySQL()
 			login()
+			fmt.Println("Set MySQL DB")
+
 		} else if strings.ToLower(os.Args[1]) == "psql" {
-			err := writeToFile(map[int]string{0: "postgres", 1: "host=localhost port=5432 user=postgres dbname=PassCypher sslmode=disable"})
-			if err != nil {
-				fck(err)
-			}
+			tableactions.SetPLSQL()
+			login()
 			fmt.Println("Set PSQL DB")
 		} else {
 			panic("Invalid Arguement!")

@@ -24,7 +24,6 @@ func CreateSqlite(name string) error {
 		return err
 	}
 	_, err = db.Exec("CREATE TABLE `users` (`password` VARCHAR(255) NOT NULL)")
-	db.
 
 	return nil
 }
